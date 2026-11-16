@@ -1,0 +1,118 @@
+{% load ui %}
+<div id="dashboard-summary" class="stack">
+  {% if state.error %}
+    <div class="notice notice--error">
+      <span class="notice__tag">error</span>
+      <span>{{ state.error }}</span>
+    </div>
+  {% endif %}
+
+  {% if state.has_degraded %}
+    <div class="notice notice--warning">
+      <span class="notice__tag">degradado</span>
+      <span>
+        Nodos sin respuesta en esta lectura: <b>{{ state.degraded|join:", " }}</b>.
+        El resto del panel sigue operativo.
+      </span>
+    </div>
+  {% endif %}
+
+  <div class="grid grid--stats">
+    <div class="stat stat--blue">
+      <span class="stat__label">{% icon "users" 12 %} jugadores</span>
+      <span class="stat__value">{{ state.players_active }}</span>
+      <span class="stat__foot">{{ state.players_total }} registrados / {{ state.players_active }} activos</span>
+    </div>
+    <div class="stat stat--cyan">
+      <span class="stat__label">{% icon "layers" 12 %} partidas</span>
+      <span class="stat__value">{{ state.sessions_count }}</span>
+      <span class="stat__foot">nodo sessions</span>
+    </div>
+    <div class="stat stat--yellow">
+      <span class="stat__label">{% icon "list" 12 %} eventos</span>
+      <span class="stat__value">{{ state.events_count }}</span>
+      <span class="stat__foot">{{ state.events|length }} en la ultima lectura</span>
+    </div>
+    <div class="stat stat--green">
+      <span class="stat__label">{% icon "target" 12 %} punteria global</span>
+      <span class="stat__value">{{ state.accuracy }}%</span>
+      <span class="stat__foot">{{ state.total_hits }} impactos / {{ state.total_shots }} disparos</span>
+    </div>
+  </div>
+
+  <div class="grid grid--split">
+    <section class="panel">
+      <div class="panel__head">
+        <span class="panel__title">{% icon "activity" 14 %} ultimos eventos</span>
+        <span class="panel__meta">nodo events</span>
+      </div>
+      <div class="panel__body panel__body--flush">
+        <div class="events">
+          {% for event in state.events %}
+            <div class="event {{ event.severity|severity_class }}">
+              <span class="event__time">{{ event.time_label }}</span>
+              <span>
+                <span class="event__kind">{{ event.kind }}</span>
+                <span class="event__detail">{{ event.detail }}</span>
+                <span class="event__meta">{{ event.actor|default:"sistema" }} / {{ event.source }}</span>
+              </span>
+            </div>
+          {% empty %}
+            <div class="events__empty">sin eventos registrados todavia</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="panel__foot">
+        <a href="{% url 'history:index' %}">ver historial completo</a>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="panel panel--accent">
+        <div class="panel__head">
+          <span class="panel__title">{% icon "database" 14 %} conexion rtdb</span>
+        </div>
+        <div class="panel__body">
+          <div class="kv"><span>host</span><b>{{ firebase_host }}</b></div>
+          <div class="kv"><span>estado</span>
+            <b class="{% if state.online %}text-green{% else %}text-red{% endif %}">{{ state.connection_label }}</b>
+          </div>
+          <div class="kv"><span>respuesta</span><b>{{ state.connection_detail|default:"-" }}</b></div>
+          <div class="kv"><span>eventos criticos</span><b class="text-red">{{ state.critical_events|default:"0" }}</b></div>
+          <div class="kv"><span>avisos</span><b class="text-yellow">{{ state.warning_events|default:"0" }}</b></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <span class="panel__title">{% icon "users" 14 %} roster</span>
+          <span class="panel__meta">{{ state.players_total }} jugadores</span>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <div class="table-wrap" style="max-height:240px">
+            <table class="table">
+              <thead>
+                <tr><th>jugador</th><th>equipo</th><th class="text-right">disp.</th><th class="text-right">imp.</th></tr>
+              </thead>
+              <tbody>
+                {% for player in state.players %}
+                  <tr>
+                    <td class="is-strong">{{ player.name }}</td>
+                    <td class="text-muted">{{ player.team }}</td>
+                    <td class="is-num">{{ player.shots }}</td>
+                    <td class="is-num">{{ player.hits }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="4" class="table__empty">sin jugadores</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel__foot">
+          <a href="{% url 'players:index' %}">gestionar roster</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

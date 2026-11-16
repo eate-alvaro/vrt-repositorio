@@ -1,0 +1,33 @@
+{% load static ui %}<!doctype html>
+<html lang="es" data-theme="tokyo-night">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}{{ page_title|default:"Workspace" }} - {{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'theme/css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/layout.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/components.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="app" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% include "theme/partials/topbar.html" %}
+
+  <div class="shell">
+    {% include "theme/partials/sidebar.html" %}
+
+    <main class="workspace" id="workspace">
+      <div class="workspace__inner" id="workspace-inner">
+        {% include "theme/partials/messages.html" %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+  {% include "theme/partials/statusline.html" %}
+
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

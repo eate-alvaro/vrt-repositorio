@@ -1,0 +1,10 @@
+{% if messages %}
+  <div class="flash-stack">
+    {% for message in messages %}
+      <div class="notice notice--{{ message.tags|default:'info' }}">
+        <span class="notice__tag">{{ message.tags|default:"info" }}</span>
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

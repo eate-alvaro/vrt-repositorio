@@ -1,0 +1,84 @@
+{% load ui %}
+<section class="panel" id="history-panel">
+  <div class="panel__head">
+    <span class="panel__title">{% icon "clock" 14 %} events / telemetria</span>
+    <span class="panel__meta">{{ state.shown }} de {{ state.total }} / filtro: {{ state.severity_filter }}</span>
+  </div>
+
+  <div class="panel__body">
+    <div class="row row--between">
+      <div class="row" role="group" aria-label="Filtro por severidad">
+        {% for option in filters %}
+          <a class="btn btn--sm {% if state.severity_filter == option %}btn--primary{% else %}btn--ghost{% endif %}"
+             href="{% url 'history:index' %}?severity={{ option }}"
+             hx-get="{% url 'history:index' %}?severity={{ option }}"
+             hx-target="#history-view"
+             hx-swap="outerHTML">
+            {{ option }}
+          </a>
+        {% endfor %}
+      </div>
+
+      <form method="post"
+            action="{% url 'history:clear' %}"
+            hx-post="{% url 'history:clear' %}"
+            hx-target="#history-view"
+            hx-swap="outerHTML"
+            hx-confirm="Vaciar todo el nodo events? Esta accion no se puede deshacer.">
+        {% csrf_token %}
+        <input type="hidden" name="severity" value="{{ state.severity_filter }}">
+        <button class="btn btn--danger btn--sm" type="submit">{% icon "trash" 12 %} vaciar historial</button>
+      </form>
+    </div>
+
+    {% if state.error %}
+      <div class="notice notice--error" style="margin-top:12px">
+        <span class="notice__tag">error</span>
+        <span>{{ state.error }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="panel__body panel__body--flush">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>hora</th>
+            <th>evento</th>
+            <th>detalle</th>
+            <th>actor</th>
+            <th>fuente</th>
+            <th>severidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in state.visible_events %}
+            <tr>
+              <td class="is-time">{{ event.time_label }}</td>
+              <td class="is-strong">{{ event.kind }}</td>
+              <td>{{ event.detail }}</td>
+              <td>{{ event.actor|default:"-" }}</td>
+              <td class="text-muted">{{ event.source }}</td>
+              <td>
+                <span class="badge {% if event.severity == 'critical' %}badge--danger{% elif event.severity == 'warning' %}badge--warning{% elif event.severity == 'success' %}badge--success{% else %}badge--info{% endif %}">
+                  {{ event.severity }}
+                </span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="table__empty">
+                sin eventos para el filtro seleccionado
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel__foot">
+    Fuentes previstas: <b>web</b> (esta plataforma), <b>godot</b> (entorno VR), <b>esp32</b> / <b>mqtt</b> (sensores IoT).
+  </div>
+</section>

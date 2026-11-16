@@ -1,0 +1,53 @@
+{% load ui %}
+<div id="match-view" class="stack">
+  <div class="page-head">
+    <div>
+      <div class="page-head__eyebrow">bloque simulacion</div>
+      <h1>Simulacion de partida</h1>
+      <div class="page-head__sub">Cada control despacha un Intent; el reducer produce el estado y los efectos escriben la telemetria.</div>
+    </div>
+    <div class="page-head__actions">
+      {% if state.active %}
+        <span class="badge badge--success">{% icon "activity" 12 %} partida en curso</span>
+      {% else %}
+        <span class="badge badge--muted">{% icon "stop" 12 %} {{ state.phase }}</span>
+      {% endif %}
+      <a class="btn btn--ghost btn--sm" href="{% url 'history:index' %}">{% icon "clock" 13 %} Ver historial</a>
+    </div>
+  </div>
+
+  <div class="grid grid--split">
+    {% include "blocks/simulation/partials/match_panel.html" %}
+
+    <div class="stack">
+      <section class="panel">
+        <div class="panel__head">
+          <span class="panel__title">{% icon "terminal" 14 %} ciclo mvi</span>
+        </div>
+        <div class="panel__body">
+          <div class="terminal">
+            <div class="terminal__line terminal__line--comment">intent: shoot</div>
+            <div class="terminal__line">reduce(state, intent) -&gt; state'</div>
+            <div class="terminal__line terminal__line--comment">effects: persist_match, record_event</div>
+            <div class="terminal__line">render(view, state')</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <span class="panel__title">{% icon "info" 14 %} reglas de la partida</span>
+        </div>
+        <div class="panel__body doc">
+          <ul>
+            <li>Vida inicial: 100 puntos. Cada impacto resta 20.</li>
+            <li>Municion inicial: 30 bolas. Cada disparo suma 10 puntos.</li>
+            <li>Con vida en cero el jugador queda eliminado y la partida se cierra.</li>
+            <li>El estado vive en la sesion y se espeja en el nodo <code>sessions</code>.</li>
+            <li>Cada accion emite un evento en el nodo <code>events</code>.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

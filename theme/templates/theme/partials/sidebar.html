@@ -1,0 +1,29 @@
+{% load ui %}
+<aside class="sidebar">
+  <nav class="nav" aria-label="Modulos">
+    <p class="nav__label">// modulos</p>
+    {% for item in nav_blocks %}
+      <a class="nav__item {% if item.key == active_block %}is-active{% endif %}"
+         href="{{ item.url }}"
+         {% if item.key == active_block %}aria-current="page"{% endif %}>
+        <span class="nav__glyph" aria-hidden="true">{% if item.key == active_block %}&gt;{% else %}&nbsp;{% endif %}</span>
+        <span class="nav__icon">{% icon item.icon 15 %}</span>
+        <span class="nav__text">{{ item.label }}</span>
+        <span class="nav__hint">{{ item.hint }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="sidebar__foot">
+    <p class="nav__label">// sesion</p>
+    {% if actor %}
+      <div class="kv"><span>usuario</span><b>{{ actor.username }}</b></div>
+      <div class="kv"><span>rol</span><b>{{ actor.role }}</b></div>
+      <div class="kv"><span>estado</span><b class="text-green">autenticado</b></div>
+    {% else %}
+      <div class="kv"><span>usuario</span><b class="text-muted">anonimo</b></div>
+      <div class="kv"><span>rol</span><b class="text-muted">-</b></div>
+      <div class="kv"><span>estado</span><b class="text-yellow">sin sesion</b></div>
+    {% endif %}
+  </div>
+</aside>

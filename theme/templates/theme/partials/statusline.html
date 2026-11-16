@@ -1,0 +1,17 @@
+{% load ui %}
+<footer class="statusline">
+  <span class="statusline__seg is-accent">[ MVI ] model :: view :: intent</span>
+  <span class="statusline__sep">|</span>
+  <span class="statusline__seg">{% icon "activity" 12 %} <b>{{ active_block|default:"inicio" }}</b></span>
+  <span class="statusline__sep">|</span>
+  <span class="statusline__seg">{% icon "database" 12 %} RTDB <b>{{ firebase_host }}</b></span>
+  <span class="statusline__spacer"></span>
+  {% if actor %}
+    <span class="statusline__seg">{% icon "user" 12 %} <b>{{ actor.username }}</b></span>
+    <span class="statusline__sep">|</span>
+  {% else %}
+    <span class="statusline__seg">{% icon "lock" 12 %} sin sesion</span>
+    <span class="statusline__sep">|</span>
+  {% endif %}
+  <span class="statusline__seg">{{ now|date:"d/m/Y H:i" }}</span>
+</footer>

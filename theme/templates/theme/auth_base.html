@@ -1,0 +1,44 @@
+{% load static ui %}<!doctype html>
+<html lang="es" data-theme="tokyo-night">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}Acceso - {{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'theme/css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/layout.css' %}">
+  <link rel="stylesheet" href="{% static 'theme/css/components.css' %}">
+</head>
+<body>
+  <div class="auth">
+    <div class="auth__backdrop" aria-hidden="true"></div>
+
+    <div class="auth__panel">
+      <div class="auth__bar">
+        <span class="auth__bar-title">{{ block_title|default:"acceso" }}</span>
+        <span class="auth__bar-meta">{{ theme_name }} / v{{ app_version }}</span>
+      </div>
+
+      <div class="auth__body">
+        <div class="auth__brand">
+          <span class="auth__mark">{% icon "crosshair" 22 1.5 %}</span>
+          <span>
+            <span class="auth__brand-name">{{ app_name|cut:"& IOT" }}<em>VR</em></span>
+            <span class="auth__brand-tag">{{ app_tagline }}</span>
+          </span>
+        </div>
+
+        {% include "theme/partials/messages.html" %}
+
+        {% block content %}{% endblock %}
+      </div>
+
+      <div class="auth__foot">
+        <span>{% icon "database" 12 %} RTDB {{ firebase_host }}</span>
+        {% block foot %}<span>{{ theme_name }}</span>{% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% load ui %}
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="brand-mark">::</span>
+    <span class="brand-name">{{ app_name|cut:"& IOT" }}<em>VR</em></span>
+    <span class="brand-tag">{{ app_tagline }}</span>
+  </div>
+
+  <div class="topbar__meta">
+    <span class="chip">{% icon "layers" 12 %} mvi</span>
+    <span class="chip">{% icon "database" 12 %} {{ firebase_host }}</span>
+
+    {% if actor %}
+      <span class="chip">
+        <span class="dot dot--online" aria-hidden="true"></span>
+        {{ actor.label }}
+      </span>
+      <form class="inline-form" method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button class="btn btn--ghost btn--sm" type="submit">
+          {% icon "power" 13 %} Salir
+        </button>
+      </form>
+    {% else %}
+      <a class="btn btn--ghost btn--sm" href="{% url 'accounts:login' %}">
+        {% icon "login" 13 %} Acceder
+      </a>
+    {% endif %}
+  </div>
+</header>

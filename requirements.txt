@@ -1,0 +1,5 @@
+# Dependencias del proyecto Paintball VR & IoT (arquitectura MVI)
+Django>=5.2,<7.0
+requests>=2.32
+python-dotenv>=1.0
+whitenoise>=6.7

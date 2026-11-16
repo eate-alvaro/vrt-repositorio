@@ -1,0 +1,25 @@
+{% load ui %}
+<div id="dashboard-view" class="stack">
+  <div class="page-head">
+    <div>
+      <div class="page-head__eyebrow">bloque dashboard</div>
+      <h1>Panel principal</h1>
+      <div class="page-head__sub">Centro de control de la simulacion de paintball en entornos controlados.</div>
+    </div>
+    <div class="page-head__actions">
+      <span class="badge {% if state.online %}badge--success{% else %}badge--danger{% endif %}">
+        <span class="dot {% if state.online %}dot--online{% else %}dot--offline{% endif %}" aria-hidden="true"></span>
+        {{ state.connection_label }}
+      </span>
+      <a class="btn btn--ghost btn--sm"
+         href="{% url 'dashboard:index' %}"
+         hx-get="{% url 'dashboard:index' %}"
+         hx-target="#dashboard-view"
+         hx-swap="outerHTML">
+        {% icon "refresh" 13 %} actualizar
+      </a>
+    </div>
+  </div>
+
+  {% include "blocks/dashboard/partials/summary_panel.html" %}
+</div>

@@ -1,0 +1,110 @@
+{% load ui %}
+<section class="panel" id="roster-panel">
+  <div class="panel__head">
+    <span class="panel__title">{% icon "users" 14 %} roster</span>
+    <span class="panel__meta">
+      {{ state.total }} filas / estado: {{ state.status }}
+    </span>
+  </div>
+
+  <div class="panel__body">
+    {% if state.error %}
+      <div class="notice notice--error">
+        <span class="notice__tag">error</span>
+        <span>{{ state.error }}</span>
+      </div>
+    {% endif %}
+
+    <form class="row"
+          method="post"
+          action="{% url 'players:add' %}"
+          hx-post="{% url 'players:add' %}"
+          hx-target="#roster-view"
+          hx-swap="outerHTML">
+      {% csrf_token %}
+      <input class="input grow" type="text" name="name"
+             value="{{ state.form_name }}" placeholder="Nombre del jugador"
+             autocomplete="off" required>
+      <select class="select" name="team" aria-label="Equipo">
+        {% for team in teams %}
+          <option value="{{ team }}" {% if state.form_team == team %}selected{% endif %}>{{ team }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn--primary btn--sm" type="submit">
+        {% icon "plus" 13 %} Agregar
+      </button>
+    </form>
+  </div>
+
+  <div class="panel__body panel__body--flush">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>jugador</th>
+            <th>equipo</th>
+            <th>estado</th>
+            <th class="text-right">disparos</th>
+            <th class="text-right">impactos</th>
+            <th class="text-right">acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for player in state.players %}
+            <tr>
+              <td class="is-strong">
+                <span class="mono">{{ player.initials }}</span>
+                &nbsp;{{ player.name }}
+              </td>
+              <td>{{ player.team }}</td>
+              <td>
+                {% if player.is_active %}
+                  <span class="badge badge--success">activo</span>
+                {% else %}
+                  <span class="badge badge--muted">inactivo</span>
+                {% endif %}
+              </td>
+              <td class="is-num">{{ player.shots }}</td>
+              <td class="is-num">{{ player.hits }}</td>
+              <td class="text-right">
+                <div class="row" style="justify-content:flex-end;gap:4px">
+                  <form method="post"
+                        action="{% url 'players:toggle' player.id %}"
+                        hx-post="{% url 'players:toggle' player.id %}"
+                        hx-target="#roster-view"
+                        hx-swap="outerHTML">
+                    {% csrf_token %}
+                    <button class="btn btn--ghost btn--sm" type="submit">
+                      {% icon "refresh" 12 %} {{ player.is_active|yesno:"pausar,activar" }}
+                    </button>
+                  </form>
+                  <form method="post"
+                        action="{% url 'players:remove' player.id %}"
+                        hx-post="{% url 'players:remove' player.id %}"
+                        hx-target="#roster-view"
+                        hx-swap="outerHTML"
+                        hx-confirm="Eliminar a {{ player.name }} del roster?">
+                    {% csrf_token %}
+                    <button class="btn btn--danger btn--sm" type="submit">
+                      {% icon "trash" 12 %} quitar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="table__empty">
+                sin jugadores registrados / agrega el primero con el formulario superior
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel__foot">
+    Las altas, bajas y cambios de estado emiten eventos de telemetria en el nodo <b>events</b>.
+  </div>
+</section>

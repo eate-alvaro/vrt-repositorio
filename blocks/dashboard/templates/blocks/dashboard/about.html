@@ -1,0 +1,105 @@
+{% extends "theme/base.html" %}
+{% load ui %}
+
+{% block title %}Proyecto - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="page-head__eyebrow">documentacion</div>
+    <h1>Acerca del proyecto</h1>
+    <div class="page-head__sub">Modelo de realidad virtual e IoT para la simulacion interactiva de paintball.</div>
+  </div>
+  <div class="page-head__actions">
+    <span class="badge badge--info">{% icon "layers" 12 %} arquitectura mvi</span>
+    <span class="badge badge--muted">v{{ app_version }}</span>
+  </div>
+</div>
+
+<div class="grid grid--split">
+  <section class="panel">
+    <div class="panel__head">
+      <span class="panel__title">{% icon "info" 14 %} descripcion</span>
+    </div>
+    <div class="panel__body doc">
+      <h2>Modelo de realidad virtual e IoT para la simulacion interactiva de paintball en entornos controlados</h2>
+      <p>
+        El proyecto integra un entorno virtual interactivo con tecnologias IoT para detectar y
+        representar los eventos de una partida de paintball. Esta plataforma web actua como
+        centro de control: autentica usuarios, administra el roster, ejecuta la simulacion de
+        la partida y consolida la telemetria de eventos.
+      </p>
+
+      <h3>Componentes previstos</h3>
+      <ul>
+        <li><b>Godot</b> - entorno virtual 3D y logica de simulacion.</li>
+        <li><b>ESP32 + sensores</b> - adquisicion de eventos fisicos del marcador y los impactos.</li>
+        <li><b>Wi-Fi / MQTT</b> - transporte de los eventos hacia la plataforma.</li>
+        <li><b>Python / Django</b> - centro de control, autenticacion y registro de eventos.</li>
+        <li><b>Firebase Realtime Database</b> - almacenamiento en tiempo real de usuarios, roster, partidas y eventos.</li>
+      </ul>
+
+      <h3>Alcance de esta version</h3>
+      <p>
+        Esta entrega implementa el centro de control web completo con arquitectura MVI. Los
+        eventos se generan desde la propia plataforma (fuente <code>web</code>); la integracion
+        fisica con ESP32 y Godot se conecta escribiendo en el mismo nodo <code>events</code>
+        con las fuentes <code>esp32</code>, <code>mqtt</code> o <code>godot</code>.
+      </p>
+
+      <div class="notice notice--warning">
+        <span class="notice__tag">nota</span>
+        <span>
+          El login se valida contra el nodo <code>users</code> de Realtime Database, no contra
+          Firebase Authentication. Es adecuado para un entorno academico controlado.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <div class="stack">
+    <section class="panel">
+      <div class="panel__head">
+        <span class="panel__title">{% icon "layers" 14 %} arquitectura mvi</span>
+      </div>
+      <div class="panel__body doc">
+        <p>Flujo unidireccional aplicado en cada bloque funcional:</p>
+        <div class="terminal">
+          <div class="terminal__line">Intent  -&gt;  Reducer(puro)  -&gt;  State + Effects</div>
+          <div class="terminal__line terminal__line--comment">                                    |</div>
+          <div class="terminal__line">              Effect handlers (IO)  &lt;--+</div>
+          <div class="terminal__line terminal__line--comment">                        |</div>
+          <div class="terminal__line">              Intent de realimentacion  -&gt;  Reducer</div>
+        </div>
+        <h3>Bloques</h3>
+        <ul>
+          <li><b>core</b> - Store, Intent, Effect, Reducer, State y cliente REST de Firebase.</li>
+          <li><b>theme</b> - tema Tokyo Night / Omarchy OS: tokens, layout y componentes.</li>
+          <li><b>accounts</b> - autenticacion contra el nodo <code>users</code>.</li>
+          <li><b>telemetry</b> - dominio compartido de eventos y sesiones.</li>
+          <li><b>dashboard</b> - consolidacion del resumen del sistema.</li>
+          <li><b>simulation</b> - maquina de estados de la partida.</li>
+          <li><b>players</b> - roster sincronizado con <code>players</code>.</li>
+          <li><b>history</b> - visor de telemetria con filtro por severidad.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <span class="panel__title">{% icon "database" 14 %} almacenamiento</span>
+      </div>
+      <div class="panel__body doc">
+        <div class="kv"><span>url</span><b>{{ firebase_url }}</b></div>
+        <h3>Nodos</h3>
+        <ul>
+          <li><code>users/&lt;usuario&gt;</code> - credenciales (hash PBKDF2) y rol.</li>
+          <li><code>players/&lt;id&gt;</code> - roster con equipo, estado y estadisticas.</li>
+          <li><code>sessions/&lt;match_id&gt;</code> - espejo del estado de cada partida.</li>
+          <li><code>events/&lt;id&gt;</code> - telemetria: tipo, detalle, severidad, fuente y actor.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

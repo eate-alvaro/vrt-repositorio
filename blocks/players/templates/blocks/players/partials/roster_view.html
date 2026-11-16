@@ -1,0 +1,17 @@
+{% load ui %}
+<div id="roster-view" class="stack">
+  <div class="page-head">
+    <div>
+      <div class="page-head__eyebrow">bloque roster</div>
+      <h1>Jugadores</h1>
+      <div class="page-head__sub">Participantes registrados en el nodo <b>players</b> de Realtime Database.</div>
+    </div>
+    <div class="page-head__actions">
+      <span class="badge badge--info">{% icon "users" 12 %} {{ state.total }} registrados</span>
+      <span class="badge badge--success">{% icon "check" 12 %} {{ state.active_count }} activos</span>
+      <span class="badge badge--muted">{% icon "x" 12 %} {{ state.inactive_count }} inactivos</span>
+    </div>
+  </div>
+
+  {% include "blocks/players/partials/roster_panel.html" %}
+</div>

@@ -1,0 +1,122 @@
+{% load ui %}
+<section class="panel" id="match-panel">
+  <div class="panel__head">
+    <span class="panel__title">{% icon "crosshair" 14 %} arena virtual / campo 01</span>
+    <span class="panel__meta">
+      {% if state.match_id %}partida {{ state.match_id }}{% else %}sin partida{% endif %}
+    </span>
+  </div>
+
+  <div class="panel__body">
+    {% if state.has_feedback %}
+      <div class="notice notice--{% if state.last_severity == 'critical' %}error{% elif state.last_severity == 'warning' %}warning{% elif state.last_severity == 'success' %}success{% else %}info{% endif %}">
+        <span class="notice__tag">{{ state.last_kind }}</span>
+        <span>{{ state.last_detail }}</span>
+      </div>
+    {% endif %}
+
+    <div class="arena" style="margin-top:12px">
+      <div class="arena__grid" aria-hidden="true"></div>
+      <div class="arena__horizon" aria-hidden="true"></div>
+      <div class="arena__cover arena__cover--a" aria-hidden="true"></div>
+      <div class="arena__cover arena__cover--b" aria-hidden="true"></div>
+      <div class="arena__cover arena__cover--c" aria-hidden="true"></div>
+      <div class="arena__player" aria-hidden="true"></div>
+      <div class="arena__reticle" aria-hidden="true"></div>
+      <div class="arena__tag">entorno 3d conceptual / simulacion</div>
+      <div class="arena__hud">
+        <span>zona de juego <b>{{ state.phase }}</b></span>
+        <span>objetivo <b>{{ state.score }} pts</b></span>
+      </div>
+    </div>
+
+    <form class="controls" style="margin-top:12px"
+          method="post"
+          action="{% url 'simulation:action' %}"
+          hx-post="{% url 'simulation:action' %}"
+          hx-target="#match-view"
+          hx-swap="outerHTML">
+      {% csrf_token %}
+      <button class="btn btn--success btn--sm" type="submit" name="action" value="start">
+        {% icon "play" 13 %} iniciar
+      </button>
+      <button class="btn btn--danger btn--sm" type="submit" name="action" value="shoot"
+              {% if not state.active %}disabled{% endif %}>
+        {% icon "target" 13 %} disparar
+      </button>
+      <button class="btn btn--warn btn--sm" type="submit" name="action" value="hit"
+              {% if not state.active %}disabled{% endif %}>
+        {% icon "bolt" 13 %} simular impacto
+      </button>
+      <button class="btn btn--ghost btn--sm" type="submit" name="action" value="finish"
+              {% if not state.active %}disabled{% endif %}>
+        {% icon "stop" 13 %} finalizar
+      </button>
+      <button class="btn btn--ghost btn--sm" type="submit" name="action" value="reset">
+        {% icon "refresh" 13 %} reiniciar
+      </button>
+    </form>
+  </div>
+
+  <div class="panel__body panel__body--flush">
+    <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+      <div class="meter">
+        <div class="meter__head">
+          <span>{% icon "shield" 12 %} vida</span>
+          <b>{{ state.hp }} / {{ state.max_hp }}</b>
+        </div>
+        <div class="meter__track">
+          <div class="meter__fill {% if state.hp_state == 'danger' %}meter__fill--danger{% elif state.hp_state == 'warning' %}meter__fill--warning{% endif %}"
+               style="width: {{ state.hp_percent }}%"></div>
+        </div>
+      </div>
+
+      <div class="meter">
+        <div class="meter__head">
+          <span>{% icon "layers" 12 %} municion</span>
+          <b>{{ state.ammo }} / {{ state.max_ammo }}</b>
+        </div>
+        <div class="meter__track">
+          <div class="meter__fill meter__fill--ammo" style="width: {{ state.ammo_percent }}%"></div>
+        </div>
+      </div>
+
+      <div class="meter">
+        <div class="meter__head">
+          <span>{% icon "activity" 12 %} punteria</span>
+          <b>{{ state.accuracy }} %</b>
+        </div>
+        <div class="meter__track">
+          <div class="meter__fill meter__fill--score" style="width: {{ state.accuracy }}%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid--stats" style="padding:0 16px 16px;gap:12px">
+    <div class="stat stat--blue">
+      <span class="stat__label">disparos</span>
+      <span class="stat__value">{{ state.shots }}</span>
+      <span class="stat__foot">bolas lanzadas</span>
+    </div>
+    <div class="stat stat--yellow">
+      <span class="stat__label">impactos</span>
+      <span class="stat__value">{{ state.hits }}</span>
+      <span class="stat__foot">recibidos</span>
+    </div>
+    <div class="stat stat--purple">
+      <span class="stat__label">puntuacion</span>
+      <span class="stat__value">{{ state.score }}</span>
+      <span class="stat__foot">puntos acumulados</span>
+    </div>
+    <div class="stat stat--green">
+      <span class="stat__label">estado</span>
+      <span class="stat__value" style="font-size:15px">{{ state.phase }}</span>
+      <span class="stat__foot">fase de la partida</span>
+    </div>
+  </div>
+
+  <div class="panel__foot">
+    El estado de la partida se conserva en la sesion y se espeja en <b>sessions</b>. Los eventos se registran en <b>events</b>.
+  </div>
+</section>

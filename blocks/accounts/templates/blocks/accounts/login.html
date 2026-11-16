@@ -1,0 +1,55 @@
+{% extends "theme/auth_base.html" %}
+{% load ui %}
+
+{% block title %}Acceso - {{ app_name }}{% endblock %}
+{% block foot %}<a href="{% url 'accounts:register' %}">Crear cuenta</a>{% endblock %}
+
+{% block content %}
+<h2 class="auth__title">Iniciar sesion</h2>
+<p class="auth__intro">Accede al centro de simulacion para controlar partidas, administrar el roster y consultar la telemetria de eventos.</p>
+
+{% if state.error %}
+  <div class="notice notice--error">
+    <span class="notice__tag">{{ state.error_code|default:"error" }}</span>
+    <span>{{ state.error }}</span>
+  </div>
+{% endif %}
+
+<form class="form" method="post" action="{% url 'accounts:login' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+
+  <div class="field">
+    <label class="field__label" for="username">
+      <span>usuario</span>
+      <span class="field__hint">nodo users</span>
+    </label>
+    <input class="input" id="username" name="username" type="text"
+           value="{{ state.username }}" autocomplete="username"
+           placeholder="jugador01" required autofocus>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="password">
+      <span>contrasena</span>
+      <span class="field__hint">hash pbkdf2-sha256</span>
+    </label>
+    <input class="input" id="password" name="password" type="password"
+           autocomplete="current-password" placeholder="........" required>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" name="remember" value="1" {% if state.remember %}checked{% endif %}>
+    <span>mantener sesion activa</span>
+  </label>
+
+  <button class="btn btn--primary btn--block" type="submit">
+    {% icon "login" 14 %} Entrar
+  </button>
+</form>
+
+<p class="auth__hint">
+  Las credenciales se validan contra <b>{{ firebase_host }}</b>. La contrasena se
+  almacena como hash PBKDF2-SHA256, nunca en texto plano.
+</p>
+{% endblock %}

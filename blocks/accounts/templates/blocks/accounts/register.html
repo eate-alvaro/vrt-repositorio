@@ -1,0 +1,58 @@
+{% extends "theme/auth_base.html" %}
+{% load ui %}
+
+{% block title %}Registro - {{ app_name }}{% endblock %}
+{% block foot %}<a href="{% url 'accounts:login' %}">Ya tengo cuenta</a>{% endblock %}
+
+{% block content %}
+<h2 class="auth__title">Crear cuenta</h2>
+<p class="auth__intro">El usuario se registra en el nodo <b>users</b> de Firebase Realtime Database y queda activo de inmediato.</p>
+
+{% if state.error %}
+  <div class="notice notice--error">
+    <span class="notice__tag">{{ state.error_code|default:"error" }}</span>
+    <span>{{ state.error }}</span>
+  </div>
+{% endif %}
+
+<form class="form" method="post" action="{% url 'accounts:register' %}">
+  {% csrf_token %}
+
+  <div class="field">
+    <label class="field__label" for="display_name">
+      <span>nombre visible</span>
+      <span class="field__hint">opcional</span>
+    </label>
+    <input class="input" id="display_name" name="display_name" type="text"
+           value="{{ state.display_name }}" placeholder="Jugador 01" autocomplete="name">
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="username">
+      <span>usuario</span>
+      <span class="field__hint">clave rtdb</span>
+    </label>
+    <input class="input" id="username" name="username" type="text"
+           value="{{ state.username }}" autocomplete="username"
+           placeholder="jugador01" required autofocus>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="password">
+      <span>contrasena</span>
+      <span class="field__hint">minimo 4 caracteres</span>
+    </label>
+    <input class="input" id="password" name="password" type="password"
+           autocomplete="new-password" placeholder="........" required>
+  </div>
+
+  <button class="btn btn--primary btn--block" type="submit">
+    {% icon "plus" 14 %} Registrar y entrar
+  </button>
+</form>
+
+<p class="auth__hint">
+  Al registrar se crea el registro <code>users/&lt;usuario&gt;</code> en
+  <b>{{ firebase_host }}</b> y se abre la sesion automaticamente.
+</p>
+{% endblock %}

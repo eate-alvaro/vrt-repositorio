@@ -1,0 +1,16 @@
+{% load ui %}
+<div id="history-view" class="stack">
+  <div class="page-head">
+    <div>
+      <div class="page-head__eyebrow">bloque telemetria</div>
+      <h1>Historial de eventos</h1>
+      <div class="page-head__sub">Lectura del nodo <b>events</b> con filtro por severidad aplicado en el reducer.</div>
+    </div>
+    <div class="page-head__actions">
+      <span class="badge badge--info">{% icon "list" 12 %} {{ state.total }} eventos</span>
+      <span class="badge badge--muted">{% icon "chevron" 12 %} mostrando {{ state.shown }}</span>
+    </div>
+  </div>
+
+  {% include "blocks/history/partials/events_panel.html" %}
+</div>
